@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ISIS — Planner de Viagens</title>
+<style>
+:root{--bg:#fdf6fa;--card:#fff;--tx:#3d3a5c;--mu:#7a7896;--bd:#f1e1ea;--ac:#e58ab0;--onac:#3d2a4a;--s1:#f8c8dc;--s2:#bcd9f6;--stx:#3d3a5c;--hv:rgba(255,255,255,.65);--pill:#e3effc;--pt:#3b6ea5;--ok:#2b8a3e;--ko:#c92a2a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1824;--card:#26223a;--tx:#f1ebf6;--mu:#a9a3bd;--bd:#38314f;--ac:#f19bbb;--onac:#20121f;--s1:#4a2f48;--s2:#2c3e5e;--stx:#f3e9f5;--hv:rgba(255,255,255,.14);--pill:#33415f;--pt:#bcd9f6}}
+:root[data-theme="dark"]{--bg:#1b1824;--card:#26223a;--tx:#f1ebf6;--mu:#a9a3bd;--bd:#38314f;--ac:#f19bbb;--onac:#20121f;--s1:#4a2f48;--s2:#2c3e5e;--stx:#f3e9f5;--hv:rgba(255,255,255,.14);--pill:#33415f;--pt:#bcd9f6}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--tx)}
+button,input,select,textarea{font:inherit}button{border:0;cursor:pointer}
+.app{display:flex;min-height:100vh}
+.side{width:245px;color:var(--stx);padding:24px 16px;background:linear-gradient(180deg,var(--s1),var(--s2));position:fixed;top:env(safe-area-inset-top,0px);bottom:0;overflow:auto}
+.logo{font-size:24px;font-weight:800;letter-spacing:.2em;padding:4px 6px 20px}.logo small{display:block;font-size:11px;font-weight:500;letter-spacing:.04em;opacity:.75;margin-top:2px}
+.nav button{width:100%;padding:11px 13px;background:transparent;color:var(--stx);text-align:left;border-radius:9px;margin:2px 0;opacity:.9}
+.nav button:hover,.nav button.active{background:var(--hv);opacity:1}.nav button.active{font-weight:700}
+.content{margin-left:245px;padding:28px;max-width:1500px;width:100%}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;gap:10px}
+.top h1{margin:0;font-size:27px}.sub{margin-top:5px;color:var(--mu)}
+.primary{background:var(--ac);color:var(--onac);border-radius:9px;padding:11px 16px;font-weight:700}
+.secondary{background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:9px;padding:8px 12px;font-weight:600}
+.danger{background:#fff0f0;color:var(--ko);padding:8px 11px;border-radius:8px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:20px}
+.card,.panel{background:var(--card);border-radius:14px;padding:18px;box-shadow:0 2px 12px #e58ab01f;border:1px solid var(--bd)}
+.panel{padding:20px;margin-bottom:18px}.panel h2{font-size:17px;margin:0 0 15px}
+.card .label{font-size:13px;color:var(--mu)}.card .value{font-size:25px;font-weight:800;margin-top:7px}
+.grid{display:grid;grid-template-columns:2fr 1fr;gap:18px}
+.trip-head{display:flex;justify-content:space-between;align-items:center}.trip-title{font-size:22px;font-weight:800}
+.pill{padding:5px 9px;border-radius:99px;font-size:12px;font-weight:700;background:var(--pill);color:var(--pt)}
+.timeline{border-left:2px solid var(--bd);margin-left:8px;padding-left:20px}
+.event{padding:0 0 16px;display:flex;justify-content:space-between;gap:8px}.event strong{display:block}.event span{font-size:13px;color:var(--mu)}
+.progress{height:9px;background:var(--bd);border-radius:10px;overflow:hidden}.progress i{display:block;height:100%;background:linear-gradient(90deg,#f4a6c0,#a9cdf0)}
+.list{display:flex;flex-direction:column;gap:8px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px;border:1px solid var(--bd);border-radius:10px;flex-wrap:wrap}.row span{font-size:13px;color:var(--mu)}
+.empty{text-align:center;padding:45px;color:var(--mu)}
+table{width:100%;border-collapse:collapse;min-width:520px}th,td{text-align:left;padding:10px;border-bottom:1px solid var(--bd);font-size:13px}th{font-weight:600;color:var(--mu)}
+.check{display:flex;align-items:center;gap:8px;padding:8px 0}.check input{width:20px;height:20px}.check .x{margin-left:auto}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+label{font-size:12px;font-weight:700;display:block;margin-bottom:5px}
+input,select,textarea{width:100%;padding:10px;border:1px solid var(--bd);border-radius:8px;outline:none;background:var(--card);color:var(--tx)}
+textarea{min-height:90px}.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:15px}
+.modal{position:fixed;inset:0;background:#3d3a5c66;display:none;align-items:center;justify-content:center;padding:20px;z-index:20}.modal.open{display:flex}
+.modalbox{background:var(--card);border-radius:15px;padding:22px;max-height:90vh;overflow:auto;width:min(680px,100%)}.modalbox h2{margin-top:0}
+.toast{position:fixed;right:25px;bottom:25px;background:var(--s1);color:var(--stx);padding:12px 16px;border-radius:9px;display:none;z-index:30}
+.neg{color:var(--ko)}.pos{color:var(--ok)}.mu{color:var(--mu)}.sc{overflow-x:auto}
+@media(max-width:820px){.app{flex-direction:column}.side{position:static;width:100%;padding:12px}.nav{display:flex;overflow-x:auto;gap:4px}.nav button{white-space:nowrap;width:auto}.logo{padding-bottom:8px}.content{margin-left:0;padding:16px}.grid{grid-template-columns:1fr}}
+</style><link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌸</text></svg>">
+<script src="https://accounts.google.com/gsi/client" async defer></script></head><body>
+<div class="app"><aside class="side"><div class="logo" style="display:flex;align-items:center;gap:12px"><svg width="46" height="46" viewBox="0 0 48 48" aria-label="ISIS"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f4a6c0"/><stop offset="1" stop-color="#a9cdf0"/></linearGradient></defs><circle cx="24" cy="24" r="23" fill="url(#lg)"/><path d="M9 25 L38 12 L30 38 L24 28 Z" fill="#fff"/><path d="M24 28 L38 12" stroke="#a9cdf0" stroke-width="2" fill="none"/><path d="M24 28 L22 37 L17 31 Z" fill="#fff" opacity=".7"/></svg><div>ISIS<small>Planner de Viagens</small></div></div><div class="nav" id="nav"></div></aside>
+<main class="content" id="main"></main></div>
+<div class="modal" id="modal" onclick="if(event.target===this)closeM()"><div class="modalbox" id="mc"></div></div><div class="toast" id="toast"></div>
+<script>
+const $=s=>document.querySelector(s),uid=()=>Math.random().toString(36).slice(2,9);
+const R=v=>'R$ '+(+v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+const fD=d=>d?d.split('-').reverse().join('/'):'';
+let S=null;try{S=JSON.parse(localStorage.getItem('mpv2'))}catch(e){}if(!S||!S.trips)S={trips:[],cur:null};
+const save=()=>{try{localStorage.setItem('mpv2',JSON.stringify(S))}catch(e){}if(gok()){clearTimeout(dtm);dtm=setTimeout(gsave,3000)}};
+const trip=()=>S.trips.find(t=>t.id===S.cur);
+let pg='ini',mk='',mid='',tm;
+const toast=m=>{const e=$('#toast');e.textContent=m;e.style.display='block';clearTimeout(tm);tm=setTimeout(()=>e.style.display='none',1800)};
+const CATS=['Passagens','Hospedagem','Transporte','Combustível','Alimentação','Passeios','Compras','Farmácia','Estacionamento','Internet','Outros'];
+const PAG=['Dinheiro','PIX/TED','Cartão de Crédito','Cartão de Débito'],MOE=['BRL','ARS','USD','EUR','CLP','UYU'],ST=['Ideia','Futuro','Planejando','Confirmada','Concluída'];
+const MONEY=['valor','preco','plan','v2','orcamento','tenho'];
+const gasto=r=>{const v=+r.valor||0,d=+r.desc||0,c=+r.cot||1;return Math.max(0,(r.dtipo==='%'?v*(1-d/100):v-d)*c)};
+const M={
+viagem:{t:'Viagem',f:[['nome','Nome','text'],['dest','Destino','text'],['ini','Ida','date'],['fim','Volta','date'],['pessoas','Nº de pessoas','number'],['orcamento','Orçamento (R$)','number'],['tenho','Já guardado (R$)','number'],['st','Status','sel',ST]]},
+roteiro:{t:'Atividade do roteiro',f:[['dia','Dia','date'],['hora','Hora','time'],['atv','Atividade','text'],['obs','Observações','text']],sort:r=>r.dia+r.hora},
+lugares:{t:'Lugar',f:[['nome','Nome','text'],['cat','Categoria','text'],['end','Endereço','text'],['link','Link/Instagram/site','text'],['preco','Preço','number'],['hor','Horário','text'],['tempo','Tempo estimado','text'],['prio','Prioridade','sel',['Alta','Média','Baixa']],['obs','Observações','text'],['vis','Visitado','bool'],['nota','Nota (0-10)','number'],['volta','Voltaria?','sel',['','Sim','Não']],['recom','Recomendaria?','sel',['','Sim','Não']],['paval','Preço foi...','sel',['','Barato','Justo','Caro']]]},
+orc:{t:'Orçamento por categoria',f:[['cat','Categoria','sel',CATS],['plan','Planejado (R$)','number']]},
+gastos:{t:'Gasto',f:[['desc0','Descrição','text'],['cat','Categoria','sel',CATS],['data','Data','date'],['moeda','Moeda','sel',MOE],['valor','Valor original','number'],['cot','Cotação (1 moeda = R$)','number'],['desc','Desconto','number'],['dtipo','Desconto em','sel',['R$','%']],['pag','Forma de pagamento','sel',PAG],['pag2','2ª forma (opcional)','sel',['',...PAG]],['v2','Valor da 2ª forma (R$)','number']],c:[['Total R$',r=>R(gasto(r))]]},
+pagtos:{t:'Pagamento',f:[['item','Item','text'],['valor','Valor (R$)','number'],['venc','Vencimento','date'],['st','Status','sel',['Pendente','Pago']],['por','Quem pagou','text']]},
+hosp:{t:'Hospedagem',f:[['nome','Hotel','text'],['end','Endereço','text'],['tel','Telefone','text'],['site','Site','text'],['ci','Check-in','date'],['co','Check-out','date'],['hci','Hora check-in','time'],['quarto','Tipo de quarto','text'],['valor','Valor (R$)','number'],['pag','Forma pgto','sel',PAG],['cod','Código da reserva','text'],['obs','Cancelamento / café / estacionamento','text']]},
+trans:{t:'Passagem/transporte',f:[['trecho','Trecho','text'],['cia','Companhia','text'],['loc','Localizador','text'],['data','Data','date'],['hora','Horário','time'],['assento','Assento','text'],['bag','Bagagem','text'],['valor','Valor (R$)','number']]},
+docs:{t:'Documento',fl:1,f:[['nome','Documento','text'],['tipo','Tipo','sel',['Passagem','Reserva','Ingresso','Voucher','Seguro','Aluguel de carro','Comprovante','Outro']],['onde','Link / onde está o arquivo','text']]},
+check:{t:'Item do checklist',f:[['item','Item','text'],['grupo','Grupo','sel',['Documentos','Eletrônicos','Roupas','Higiene','Outros']],['ok','Pronto','bool']]},
+compras:{t:'Compra',f:[['item','Item','text'],['qtd','Quantidade','number'],['preco','Preço unitário','number'],['ok','Comprado','bool']],c:[['Total',r=>R((+r.qtd||1)*(+r.preco||0))]]},
+carro:{t:'Registro do carro',f:[['data','Data','date'],['tipo','Tipo','sel',['Abastecimento','Pedágio','Estacionamento','Outro']],['litros','Litros','number'],['valor','Valor (R$)','number'],['km','KM do odômetro','number']]},
+dia:{t:'Registro do diário',fl:1,f:[['data','Data','date'],['lugar','Lugar','text'],['txt','O que fizemos / momentos favoritos','text'],['comeu','Onde comemos','text'],['nota','Nota do dia (0-10)','number']]},
+mapa:{t:'Ponto do mapa',f:[['nome','Local','text'],['tipo','Tipo','sel',['Hotel','Restaurante','Passeio','Aeroporto','Estacionamento','Outro']],['end','Endereço','text'],['lat','Latitude','number'],['lon','Longitude','number'],['dia','Dia (opcional)','date']]}};
+const P=[['ini','🏠','Início','Minha viagem','Tudo da sua viagem em um só lugar.','viagem','Nova viagem'],['viagens','🗺️','Minhas viagens','Minhas viagens','Crie e acompanhe suas viagens.','viagem','Nova viagem'],['roteiro','📅','Roteiro','📅 Roteiro','Organize cada dia da viagem.','roteiro','Adicionar atividade'],['lugares','📍','Lugares','📍 Lugares','Locais que você quer conhecer.','lugares','Novo lugar'],['fin','💰','Financeiro','💰 Financeiro da viagem','Planejado × realizado.','gastos','Novo gasto'],['pagtos','💳','Pagamentos','💳 Pagamentos','O que já foi pago e o que falta.','pagtos','Novo pagamento'],['hosp','🏨','Hospedagem','🏨 Hospedagem','Reservas e dados do hotel.','hosp','Nova hospedagem'],['trans','🎫','Passagens','🎫 Passagens e transportes','Cada trecho da viagem.','trans','Novo trecho'],['check','🧳','Checklist','🧳 Checklist','Não esqueça nada.','check','Adicionar item'],['compras','🛒','Compras','🛒 Comprar antes de viajar','Lista de compras da viagem.','compras','Adicionar item'],['carro','🚗','Carro','🚗 Controle do carro','Abastecimentos, pedágios e consumo.','carro','Novo registro'],['docs','📄','Documentos','📄 Documentos','Organize os arquivos importantes.','docs','Adicionar documento'],['dia','📸','Diário','📸 Diário da viagem','Registre suas memórias.','dia','Novo registro'],['mapa','🗺️','Mapa','🗺️ Mapa da viagem','Hotel, restaurantes, passeios e aeroporto.','mapa','Novo ponto'],['aval','⭐','Avaliações','⭐ Avaliação dos lugares','Seu banco pessoal de lugares visitados.','',''],['drive','☁️','Google Drive','☁️ Google Drive','Guarde seus dados também no Drive.','',''],['poup','🐷','Quanto guardar','🐷 Quanto guardar por mês','Planejamento financeiro da viagem.','','']];
+const DEF=[['Documentos','RG','CNH','Cartões','Dinheiro','Seguro viagem','Passaporte'],['Eletrônicos','Celular','Carregador','Power bank','Fones'],['Roupas','Roupas','Pijama','Roupa íntima','Casaco','Calçados'],['Higiene','Protetor solar','Remédios','Necessaire']];
+const rows=k=>k==='viagem'?S.trips:(trip().d[k]=trip().d[k]||[]);
+const tot=(t,k,f)=>(t.d[k]||[]).reduce((a,r)=>a+(+f(r)||0),0);
+const dias=d=>d?Math.ceil((new Date(d+'T00:00:00')-new Date().setHours(0,0,0,0))/864e5):null;
+const inp=(f,v)=>{const[k,,ty,o]=f,i=`id="m_${k}"`;
+if(ty==='sel')return`<select ${i}>${o.map(x=>`<option${x==v?' selected':''}>${esc(x)}</option>`).join('')}</select>`;
+if(ty==='bool')return`<input type="checkbox" ${i}${v?' checked':''} style="width:22px">`;
+return`<input type="${ty}" ${i} value="${esc(v)}"${ty==='number'?' step="any"':''}>`};
+function openM(k,id){const m=M[k],x=id?rows(k).find(r=>r.id===id):{};mk=k;mid=id||'';
+$('#mc').innerHTML=`<h2>${id?'Editar':'Novo'}: ${m.t}</h2><div class="form">${m.f.map(f=>`<div><label>${f[1]}</label>${inp(f,x[f[0]]??(f[0]==='cot'?1:f[0]==='pessoas'?2:''))}</div>`).join('')}${m.fl?`<div><label>Anexos (imagem ou PDF)</label><input type="file" id="m_files" multiple accept="image/*,application/pdf">${(x.files||[]).map(f=>`<div class="check"><input type="checkbox" class="rmf" value="${f.id}"> remover ${esc(f.name)}</div>`).join('')}</div>`:''}</div><div class="actions"><button class="secondary" onclick="closeM()">Cancelar</button><button class="primary" onclick="saveM()">Salvar</button></div>`;$('#modal').classList.add('open')}
+const closeM=()=>$('#modal').classList.remove('open');
+async function saveM(){const m=M[mk],o={};m.f.forEach(f=>{const e=$('#m_'+f[0]);o[f[0]]=f[2]==='bool'?e.checked:e.value});
+if(mk==='gastos'&&o.moeda==='BRL')o.cot=1;
+if(m.fl){const old=mid?rows(mk).find(r=>r.id===mid).files||[]:[],rm=[...document.querySelectorAll('.rmf:checked')].map(e=>e.value);old.filter(f=>rm.includes(f.id)).forEach(f=>fdel(f.id).catch(()=>{}));o.files=old.filter(f=>!rm.includes(f.id));for(const f of $('#m_files').files){if(f.size>15e6){toast('Arquivo acima de 15 MB ignorado');continue}const id=uid();try{await fput(id,f);o.files.push({id,name:f.name})}catch(e){toast('Anexos indisponíveis neste navegador')}}}
+if(mk==='viagem'){['pessoas','orcamento','tenho'].forEach(n=>o[n]=+o[n]||(n==='pessoas'?1:0));if(!o.nome)o.nome=o.dest||'Minha viagem'}
+if(mid)Object.assign(rows(mk).find(r=>r.id===mid),o);
+else{o.id=uid();if(mk==='viagem'){o.d={};Object.keys(M).forEach(k=>o.d[k]=[]);DEF.forEach(g=>g.slice(1).forEach(i=>o.d.check.push({id:uid(),item:i,grupo:g[0],ok:false})));S.trips.push(o);S.cur=o.id}else if(mk==='roteiro')insRot(o);else rows(mk).push(o)}
+save();closeM();toast('Salvo!');draw()}
+function del(k,id){if(k==='viagem'){S.trips=S.trips.filter(t=>t.id!==id);if(S.cur===id)S.cur=S.trips[0]?.id||null}else{const t=trip();(t.d[k].find(x=>x.id===id)?.files||[]).forEach(f=>fdel(f.id).catch(()=>{}));t.d[k]=t.d[k].filter(x=>x.id!==id)}save();toast('Removido');draw()}
+function upd(k,id,f,v){rows(k).find(r=>r.id===id)[f]=v;save();draw()}
+function setT(f,v){trip()[f]=+v||0;save();draw()}
+function abrir(id){S.cur=id;pg='ini';save();draw()}
+function noRot(id){const t=trip(),p=t.d.lugares.find(x=>x.id===id);t.d.roteiro.push({id:uid(),dia:t.ini||'',hora:'',atv:p.nome,obs:p.end||''});save();toast('Adicionado ao roteiro')}
+const C=(l,v,s)=>`<div class="card"><div class="label">${l}</div><div class="value">${v}</div>${s?`<small class="mu">${s}</small>`:''}</div>`;
+const btns=(k,id)=>`<button class="secondary" onclick="openM('${k}','${id}')">✎</button> <button class="danger" onclick="del('${k}','${id}')">✕</button>`;
+function cell(f,r){const v=r[f[0]];if(f[2]==='bool')return v?'✔':'—';if(v===''||v==null)return'';if(MONEY.includes(f[0])){if(f[0]==='valor'&&r.moeda&&r.moeda!=='BRL')return r.moeda+' '+(+v).toLocaleString('pt-BR');return R(v)}if(f[0]==='st')return`<span class="pill">${esc(v)}</span>`;if(f[2]==='date')return fD(v);return esc(v)}
+function tbl(k,title,ex){const m=M[k],r=[...rows(k)];if(m.sort)r.sort((a,b)=>m.sort(a)<m.sort(b)?-1:1);
+return`<div class="panel sc">${title?`<h2>${title}</h2>`:''}<table><thead><tr>${m.f.map(f=>`<th>${f[1]}</th>`).join('')}${(m.c||[]).map(c=>`<th>${c[0]}</th>`).join('')}<th></th></tr></thead><tbody>${r.map(x=>`<tr>${m.f.map(f=>`<td>${cell(f,x)}</td>`).join('')}${(m.c||[]).map(c=>`<td>${c[1](x)}</td>`).join('')}<td style="white-space:nowrap">${ex?ex(x):''}${btns(k,x.id)}</td></tr>`).join('')||'<tr><td colspan="99" class="mu">Nada por aqui ainda.</td></tr>'}</tbody></table></div>`}
+function ini(t){const g=tot(t,'gastos',gasto),dl=dias(t.ini),pc=t.orcamento?g/t.orcamento*100:0;
+const ev=[...t.d.roteiro].sort((a,b)=>a.dia<b.dia?-1:a.dia>b.dia?1:0).slice(0,6),pe=t.d.check.filter(c=>!c.ok).slice(0,5),pp=t.d.pagtos.filter(p=>p.st!=='Pago').length;
+return`<div class="cards">${C('Próxima viagem',esc(t.dest||t.nome),`${fD(t.ini)} → ${fD(t.fim)}`)}${C('Dias restantes',dl==null?'—':dl,'até a viagem')}${C('Orçamento',R(t.orcamento),`${R(g)} já gastos`)}${C('Valor disponível',`<span class="${t.orcamento-g<0?'neg':''}">${R(t.orcamento-g)}</span>`,`para ${t.pessoas} pessoa(s)`)}</div>
+<div class="grid"><div class="panel"><div class="trip-head"><div><div class="trip-title">${esc(t.nome)}</div><div class="sub">${fD(t.ini)} → ${fD(t.fim)}</div></div><span class="pill">${esc(t.st)}</span></div><hr style="border:0;border-top:1px solid var(--bd);margin:18px 0"><h2>📅 Próximos compromissos</h2><div class="timeline">${ev.map(e=>`<div class="event"><div><strong>${esc(e.hora||'—')} — ${esc(e.atv)}</strong><span>${fD(e.dia)} ${esc(e.obs)}</span></div></div>`).join('')||'<span class="mu">Adicione atividades no Roteiro.</span>'}</div></div>
+<div><div class="panel"><h2>💰 Orçamento</h2><div style="display:flex;justify-content:space-between;margin-bottom:8px"><span>Utilizado</span><b>${pc.toFixed(1).replace('.',',')}%</b></div><div class="progress"><i style="width:${Math.min(100,pc)}%"></i></div><div class="list" style="margin-top:15px">${CATS.map(c=>[c,tot(t,'gastos',r=>r.cat===c?gasto(r):0)]).filter(x=>x[1]).map(x=>`<div class="row"><b>${x[0]}</b><span>${R(x[1])}</span></div>`).join('')||'<span class="mu">Sem gastos ainda.</span>'}</div></div>
+<div class="panel"><h2>🧳 Pendências</h2>${pe.map(c=>`<div class="check"><input type="checkbox" onchange="upd('check','${c.id}','ok',this.checked)"> ${esc(c.item)}</div>`).join('')||'<span class="mu">Checklist completo 🎉</span>'}${pp?`<div class="check">💳 ${pp} pagamento(s) pendente(s)</div>`:''}</div></div></div>`}
+function viagens(){return`<div class="panel sc"><table><thead><tr>${M.viagem.f.map(f=>`<th>${f[1]}</th>`).join('')}<th></th></tr></thead><tbody>${S.trips.map(x=>`<tr>${M.viagem.f.map(f=>`<td>${cell(f,x)}</td>`).join('')}<td style="white-space:nowrap"><button class="secondary" onclick="abrir('${x.id}')">${S.cur===x.id?'✔ Ativa':'Abrir'}</button> ${btns('viagem',x.id)}</td></tr>`).join('')||'<tr><td colspan="99" class="mu">Nenhuma viagem ainda.</td></tr>'}</tbody></table></div>
+<div class="panel"><h2>Backup dos dados</h2><p class="sub">Copie o texto para guardar uma cópia ou cole um backup para importar.</p><textarea id="bk">${esc(JSON.stringify(S))}</textarea><div class="actions"><button class="secondary" onclick="navigator.clipboard&&navigator.clipboard.writeText($('#bk').value)">Copiar</button><button class="primary" onclick="imp()">Importar</button></div></div>`}
+function imp(){try{const x=JSON.parse($('#bk').value);if(x.trips){S=x;save();toast('Importado');draw()}}catch(e){toast('Backup inválido')}}
+function roteiro(t){const r=t.d.roteiro,ds=[...new Set(r.map(x=>x.dia))].sort();
+return(r.length?'<p class="sub" style="margin-top:-8px">Arraste o ☰ para reorganizar (ou use ▲▼).</p>':'')+ds.map(d=>{const n=t.ini&&d?Math.round((new Date(d)-new Date(t.ini))/864e5)+1:'';return`<div class="panel" ondragover="event.preventDefault()" ondrop="mvTo('${d}','')"><h2>${n?'Dia '+n+' — ':''}${fD(d)||'Sem data'}</h2><div class="timeline">${r.filter(x=>x.dia===d).map(x=>`<div class="event" draggable="true" ondragstart="DG='${x.id}'" ondragover="event.preventDefault()" ondrop="event.stopPropagation();mvTo('${d}','${x.id}')"><div><strong>☰ ${esc(x.hora||'—')} — ${esc(x.atv)}</strong><span>${esc(x.obs)}</span></div><div style="white-space:nowrap"><button class="secondary" onclick="mv('${x.id}',-1)">▲</button> <button class="secondary" onclick="mv('${x.id}',1)">▼</button> ${btns('roteiro',x.id)}</div></div>`).join('')}</div></div>`}).join('')||'<div class="panel empty">📅<br><br>Nenhuma atividade ainda.</div>'}
+function lugares(t){return`<div class="panel"><div class="list">${t.d.lugares.map(p=>`<div class="row"><div><b>${esc(p.nome)}</b> <span class="pill">${esc(p.prio)}</span><br><span>${[p.cat,p.preco?R(p.preco):'',p.tempo,p.hor,p.nota?'nota '+p.nota:''].filter(Boolean).map(esc).join(' · ')}</span>${p.link?`<br><span>${esc(p.link)}</span>`:''}</div><div style="display:flex;gap:6px;align-items:center"><label style="margin:0"><input type="checkbox" style="width:18px;vertical-align:middle"${p.vis?' checked':''} onchange="upd('lugares','${p.id}','vis',this.checked)"> visitado</label><button class="secondary" onclick="noRot('${p.id}')">+ Roteiro</button>${btns('lugares',p.id)}</div></div>`).join('')||'<div class="empty">📍<br><br>Sua lista de desejos está vazia.</div>'}</div></div>`}
+function fin(t){const g=tot(t,'gastos',gasto);
+return`<div class="cards">${C('Orçamento',R(t.orcamento))}${C('Gastos',R(g))}${C('Disponível',`<span class="${t.orcamento-g<0?'neg':'pos'}">${R(t.orcamento-g)}</span>`)}${C('Por pessoa',R(g/(t.pessoas||1)),t.d.gastos.length+' registros')}</div>
+<div class="panel sc"><h2>Planejado × Realizado</h2><table><thead><tr><th>Categoria</th><th>Planejado</th><th>Realizado</th><th>Diferença</th></tr></thead><tbody>${CATS.map(c=>[c,tot(t,'orc',r=>r.cat===c?r.plan:0),tot(t,'gastos',r=>r.cat===c?gasto(r):0)]).filter(x=>x[1]||x[2]).map(x=>`<tr><td>${x[0]}</td><td>${R(x[1])}</td><td>${R(x[2])}</td><td class="${x[2]>x[1]?'neg':'pos'}">${x[2]>x[1]?'+':''}${R(x[2]-x[1])}</td></tr>`).join('')||'<tr><td colspan="4" class="mu">Planeje categorias abaixo.</td></tr>'}</tbody></table></div>`+tbl('gastos','Gastos')+tbl('orc','Orçamento por categoria').replace('</h2>','</h2>')+`<button class="secondary" onclick="openM('orc')">＋ Planejar categoria</button>`}
+function pagtos(t){const n=t.pessoas||1,by={};t.d.pagtos.forEach(p=>{if(p.por&&p.st==='Pago')by[p.por]=(by[p.por]||0)+(+p.valor||0)});
+return`<div class="cards">${C('Já pago',R(tot(t,'pagtos',r=>r.st==='Pago'?r.valor:0)))}${C('Falta pagar',R(tot(t,'pagtos',r=>r.st!=='Pago'?r.valor:0)))}</div>`+tbl('pagtos')+`<div class="panel"><h2>Quem deve a quem (divisão em ${n})</h2>${Object.entries(by).map(([k,v])=>`<div class="row"><b>${esc(k)} pagou ${R(v)}</b><span>cada um dos outros deve ${R(v/n)}</span></div>`).join('')||'<span class="mu">Informe "Quem pagou" nos itens pagos.</span>'}</div>`}
+function check(t){const gs=[...new Set(t.d.check.map(c=>c.grupo))],ok=t.d.check.filter(c=>c.ok).length;
+return`<div class="cards">${C('Prontos',ok+' / '+t.d.check.length)}</div>`+gs.map(g=>`<div class="panel"><h2>${esc(g)}</h2>${t.d.check.filter(c=>c.grupo===g).map(c=>`<div class="check"><input type="checkbox"${c.ok?' checked':''} onchange="upd('check','${c.id}','ok',this.checked)"> ${esc(c.item)}<button class="danger x" onclick="del('check','${c.id}')">✕</button></div>`).join('')}</div>`).join('')}
+function dia(t){const r=[...t.d.dia].sort((a,b)=>a.data<b.data?1:-1);return r.map(x=>`<div class="panel"><div class="trip-head"><h2>${fD(x.data)} — ${esc(x.lugar)}</h2><div>${btns('dia',x.id)}</div></div><p>${esc(x.txt)}</p><div>${fl(x)}</div><span class="sub">${x.comeu?'🍽️ '+esc(x.comeu):''} ${x.nota?'⭐ '+esc(x.nota)+'/10':''}</span></div>`).join('')||'<div class="panel empty">📸<br><br>Registre aqui seus momentos favoritos.</div>'}
+function carro(t){const l=tot(t,'carro',r=>r.litros),v=tot(t,'carro',r=>r.valor),k=t.d.carro.map(r=>+r.km).filter(Boolean),d=k.length>1?Math.max(...k)-Math.min(...k):0;
+return`<div class="cards">${C('Custo total',R(v))}${C('Rodados',d+' km')}${C('Consumo',d&&l?(d/l).toFixed(1)+' km/l':'—')}${C('Custo por km',d?R(v/d):'—')}</div>`+tbl('carro')}
+function poup(t){const dl=dias(t.ini),me=dl>0?Math.max(1,Math.ceil(dl/30)):0,f=Math.max(0,t.orcamento-t.tenho);
+return`<div class="panel"><div class="form"><div><label>Custo estimado (R$)</label><input type="number" value="${t.orcamento}" onchange="setT('orcamento',this.value)"></div><div><label>Já tenho (R$)</label><input type="number" value="${t.tenho}" onchange="setT('tenho',this.value)"></div></div></div><div class="cards">${C('Falta',R(f))}${C('Meses restantes',me||'—')}${C('Guardar por mês',me?R(f/me):'—')}</div>`}
+let DG='';
+function insRot(o){const a=rows('roteiro');let k=a.findIndex(y=>y.dia>o.dia||(y.dia===o.dia&&y.hora&&o.hora&&y.hora>o.hora));k<0?a.push(o):a.splice(k,0,o)}
+function mvTo(dia,before){const a=trip().d.roteiro,i=a.findIndex(x=>x.id===DG);if(i<0||before===DG)return;const[x]=a.splice(i,1);x.dia=dia;let j=before?a.findIndex(y=>y.id===before):-1;if(j<0){let l=-1;a.forEach((y,k)=>{if(y.dia===dia)l=k});j=l+1}a.splice(j,0,x);DG='';save();draw()}
+function mv(id,d){const a=trip().d.roteiro;const i=a.findIndex(x=>x.id===id);let j=i+d;while(a[j]&&a[j].dia!==a[i].dia)j+=d;if(!a[j])return;[a[i],a[j]]=[a[j],a[i]];save();draw()}
+const dbp=new Promise(r=>{try{const q=indexedDB.open('mpvf',1);q.onupgradeneeded=()=>q.result.createObjectStore('f');q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)}catch(e){r(null)}});
+const idb=async(m,fn)=>{const db=await dbp;if(!db)throw 0;return new Promise((res,rej)=>{const tx=db.transaction('f',m),o=fn(tx.objectStore('f'));tx.oncomplete=()=>res(o.result);tx.onerror=rej})};
+const fput=(id,b)=>idb('readwrite',s=>s.put(b,id)),fget=id=>idb('readonly',s=>s.get(id)),fdel=id=>idb('readwrite',s=>s.delete(id));
+const fl=x=>(x.files||[]).map(f=>`<span class="fl" data-f="${f.id}" data-n="${esc(f.name)}">📎 ${esc(f.name)}</span> `).join('');
+function hyd(){document.querySelectorAll('.fl').forEach(async e=>{try{const b=await fget(e.dataset.f);if(!b)return;if(b.type.startsWith('image/')){const r=new FileReader();r.onload=()=>{e.innerHTML=`<img src="${r.result}" title="${esc(e.dataset.n)}" style="height:90px;border-radius:8px;margin:4px 4px 0 0">`};r.readAsDataURL(b)}else e.innerHTML=`<a href="${URL.createObjectURL(b)}" target="_blank">📎 ${esc(e.dataset.n)}</a>`}catch(x){}})}
+function docs(t){return`<div class="panel"><div class="list">${t.d.docs.map(x=>`<div class="row"><div><b>${esc(x.nome)}</b> <span class="pill">${esc(x.tipo)}</span>${x.onde?`<br><span>${esc(x.onde)}</span>`:''}<div>${fl(x)}</div></div><div style="white-space:nowrap">${btns('docs',x.id)}</div></div>`).join('')||'<div class="empty">📁<br><br>Registre passagens, reservas, ingressos e vouchers (com anexo de imagem ou PDF).</div>'}</div></div>`}
+function mapa(t){const p=t.d.mapa.filter(x=>x.lat!==''&&x.lon!==''&&!isNaN(+x.lat)&&!isNaN(+x.lon)),col={Hotel:'#e8590c',Restaurante:'#c2255c',Passeio:'#2b8a3e',Aeroporto:'#1971c2',Estacionamento:'#6741d9',Outro:'#868e96'};let svg='<p class="mu">Informe latitude e longitude (no Google Maps, clique com o botão direito no local e copie as coordenadas) para ver os pontos aqui.</p>';
+if(p.length){const la=p.map(x=>+x.lat),lo=p.map(x=>+x.lon),a=Math.min(...la),b=Math.max(...la),c=Math.min(...lo),d=Math.max(...lo),W=700,H=380,m=60,k=Math.cos((a+b)/2*Math.PI/180),s=Math.min((W-2*m)/Math.max((d-c)*k,1e-6),(H-2*m)/Math.max(b-a,1e-6));
+svg=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;background:var(--bg);border-radius:12px">${p.map(x=>{const X=W/2+(+x.lon-(c+d)/2)*k*s,Y=H/2-(+x.lat-(a+b)/2)*s;return`<circle cx="${X}" cy="${Y}" r="9" fill="${col[x.tipo]||'#888'}"/><text x="${X}" y="${Y-14}" text-anchor="middle" font-size="12" fill="var(--tx)">${esc(x.nome)}</text>`}).join('')}</svg><div style="margin-top:8px;font-size:12px">${Object.entries(col).map(([n,c])=>`<span style="margin-right:12px"><span style="color:${c}">●</span> ${n}</span>`).join('')}</div>`}
+return`<div class="panel">${svg}</div>`+tbl('mapa','',x=>`<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(x.lat&&x.lon?x.lat+','+x.lon:(x.end||x.nome))}" target="_blank" rel="noopener">Abrir no Maps</a> `)}
+function aval(){const r=S.trips.flatMap(t=>(t.d.lugares||[]).filter(p=>p.vis).map(p=>({...p,v:t.nome}))).sort((a,b)=>(+b.nota||0)-(+a.nota||0));
+return`<div class="panel sc"><table><thead><tr><th>Lugar</th><th>Viagem</th><th>Nota</th><th>Preço</th><th>Voltaria?</th><th>Recomendaria?</th><th>Observações</th></tr></thead><tbody>${r.map(p=>`<tr><td>${esc(p.nome)}</td><td>${esc(p.v)}</td><td>${p.nota?'⭐ '+esc(p.nota):''}</td><td>${esc(p.paval||'')}</td><td>${esc(p.volta||'')}</td><td>${esc(p.recom||'')}</td><td>${esc(p.obs)}</td></tr>`).join('')||'<tr><td colspan="7" class="mu">Marque lugares como visitados na aba Lugares e dê uma nota.</td></tr>'}</tbody></table></div>`}
+let TOK=null,TEXP=0,dst='',dtm;
+const gok=()=>!!TOK&&Date.now()<TEXP;
+const CID=()=>{try{return localStorage.getItem('isis_cid')||''}catch(e){return''}};
+function setCid(){try{localStorage.setItem('isis_cid',$('#cid').value.trim());toast('Client ID salvo')}catch(e){}}
+function gconn(cb){const c=CID();if(!c){toast('Cole e salve o Client ID primeiro');return}if(!window.google){toast('A biblioteca do Google não carregou (verifique a internet)');return}
+google.accounts.oauth2.initTokenClient({client_id:c,scope:'https://www.googleapis.com/auth/drive.file',callback:r=>{if(r.error){dst='Erro ao conectar: '+r.error;draw();return}TOK=r.access_token;TEXP=Date.now()+(r.expires_in-60)*1000;dst='Conectado ao Google Drive';draw();cb&&cb()}}).requestAccessToken()}
+async function gapi(u,o={}){const r=await fetch(u,{...o,headers:{Authorization:'Bearer '+TOK,...(o.headers||{})}});if(!r.ok)throw new Error(r.status);return r}
+async function gfind(){const q=encodeURIComponent("name='isis-planner-backup.json' and trashed=false"),r=await(await gapi('https://www.googleapis.com/drive/v3/files?q='+q+'&fields=files(id)')).json();return r.files[0]||null}
+async function gsave(){if(!gok()){gconn(gsave);return}try{const f=await gfind(),b='isisb',meta=JSON.stringify({name:'isis-planner-backup.json',mimeType:'application/json'}),mp=`--${b}\r\nContent-Type: application/json\r\n\r\n${meta}\r\n--${b}\r\nContent-Type: application/json\r\n\r\n${JSON.stringify(S)}\r\n--${b}--`;
+await gapi('https://www.googleapis.com/upload/drive/v3/files'+(f?'/'+f.id:'')+'?uploadType=multipart',{method:f?'PATCH':'POST',headers:{'Content-Type':'multipart/related; boundary='+b},body:mp});
+dst='Salvo no Drive às '+new Date().toLocaleTimeString('pt-BR');toast('Salvo no Drive ☁️')}catch(e){dst='Falha ao salvar no Drive ('+e.message+')'}if(pg==='drive')draw()}
+async function gload(){if(!gok()){gconn(gload);return}try{const f=await gfind();if(!f){toast('Nenhum backup encontrado no Drive');return}const x=await(await gapi('https://www.googleapis.com/drive/v3/files/'+f.id+'?alt=media')).json();if(x.trips){S=x;save();dst='Restaurado do Drive';toast('Restaurado!');draw()}}catch(e){dst='Falha ao restaurar ('+e.message+')';draw()}}
+function drive(){return`<div class="panel"><h2>1. Client ID do Google</h2><p class="sub">Crie o Client ID seguindo o passo a passo do README (uns 5 minutos) e cole abaixo.</p><input id="cid" value="${esc(CID())}" placeholder="xxxxxxxx.apps.googleusercontent.com"><div class="actions"><button class="secondary" onclick="setCid()">Salvar Client ID</button></div></div>
+<div class="panel"><h2>2. Sincronizar</h2><p class="sub">${esc(dst||'Ainda não conectado.')}</p><div class="actions" style="justify-content:flex-start"><button class="primary" onclick="gsave()">☁️ Salvar no Drive agora</button><button class="secondary" onclick="gload()">Restaurar do Drive</button></div><p class="sub">Depois de conectar, cada alteração é enviada ao Drive automaticamente. A conexão dura cerca de 1 hora; para reconectar, clique em "Salvar no Drive agora". O backup fica no arquivo <b>isis-planner-backup.json</b>, no seu Meu Drive. Anexos (fotos e PDFs) ficam apenas neste navegador.</p></div>`}
+function draw(){$('#nav').innerHTML=P.map(p=>`<button class="${p[0]===pg?'active':''}" onclick="pg='${p[0]}';draw();scrollTo(0,0)">${p[1]} &nbsp; ${p[2]}</button>`).join('');
+const p=P.find(x=>x[0]===pg),t=trip();let b;
+if(pg==='viagens')b=viagens();else if(pg==='drive')b=drive();
+else if(!t)b=`<div class="panel empty">✈️<br><br>Crie sua primeira viagem para começar.<div class="actions" style="justify-content:center"><button class="primary" onclick="openM('viagem')">＋ Nova viagem</button></div></div>`;
+else b={ini,roteiro,lugares,fin,pagtos,check,dia,carro,poup,docs,mapa,aval}[pg]?.(t)||(pg==='compras'?`<div class="cards">${C('Total estimado',R(tot(t,'compras',r=>(+r.qtd||1)*(+r.preco||0))))}</div>`+tbl('compras'):tbl(pg));
+const ok=p[5]&&(t||p[5]==='viagem');
+$('#main').innerHTML=`<div class="top"><div><h1>${p[3]}</h1><div class="sub">${p[4]}</div></div>${ok?`<button class="primary" onclick="openM('${p[5]}')">＋ ${p[6]}</button>`:''}</div>${b}`;hyd()}
+draw();
+</script></body></html>
