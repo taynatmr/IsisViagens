@@ -147,7 +147,7 @@ svg=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;background:var(--bg);border-
 return`<div class="panel">${svg}</div>`+tbl('mapa','',x=>`<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(x.lat&&x.lon?x.lat+','+x.lon:(x.end||x.nome))}" target="_blank" rel="noopener">Abrir no Maps</a> `)}
 function aval(){const r=S.trips.flatMap(t=>(t.d.lugares||[]).filter(p=>p.vis).map(p=>({...p,v:t.nome}))).sort((a,b)=>(+b.nota||0)-(+a.nota||0));
 return`<div class="panel sc"><table><thead><tr><th>Lugar</th><th>Viagem</th><th>Nota</th><th>Preço</th><th>Voltaria?</th><th>Recomendaria?</th><th>Observações</th></tr></thead><tbody>${r.map(p=>`<tr><td>${esc(p.nome)}</td><td>${esc(p.v)}</td><td>${p.nota?'⭐ '+esc(p.nota):''}</td><td>${esc(p.paval||'')}</td><td>${esc(p.volta||'')}</td><td>${esc(p.recom||'')}</td><td>${esc(p.obs)}</td></tr>`).join('')||'<tr><td colspan="7" class="mu">Marque lugares como visitados na aba Lugares e dê uma nota.</td></tr>'}</tbody></table></div>`}
-const SB_URL='',SB_KEY='';
+const SB_URL='https://mzdzjbqjfndbkfouyngh.supabase.co',SB_KEY='sb_publishable_8KK5Cu2CyJByLjT7rB_Q5g_k7z9VCEK';
 const cfg=()=>{try{return{u:SB_URL||localStorage.getItem('isis_sbu')||'',k:SB_KEY||localStorage.getItem('isis_sbk')||''}}catch(e){return{u:SB_URL,k:SB_KEY}}};
 let sb=null,usr=null,dst='',dtm;
 function sbInit(){const c=cfg();if(!c.u||!c.k||!window.supabase)return false;if(!sb)sb=window.supabase.createClient(c.u,c.k);return true}
@@ -158,12 +158,12 @@ const r=mode==='up'?await sb.auth.signUp({email:e,password:p}):await sb.auth.sig
 if(r.error){dst='Erro: '+r.error.message;draw();return}
 if(!r.data.session){dst='Conta criada. Confirme o e-mail recebido e depois clique em Entrar.';draw();return}
 usr=r.data.user;await sbSync();draw()}
-async function sbSync(){const r=await sb.from('planner_data').select('data,updated_at').maybeSingle();if(r.error){dst='Erro: '+r.error.message;return}
+async function sbSync(){const r=await sb.from('isis_viagens_data').select('data,updated_at').maybeSingle();if(r.error){dst='Erro: '+r.error.message;return}
 if(!r.data){if(S.trips.length)await nuvemSalvar();else dst='Conectado. Nada salvo ainda.'}
 else if(!S.trips.length){S=r.data.data;loc();dst='Dados carregados da nuvem'}
 else dst='Conectado. Já existem dados na nuvem e neste aparelho: use "Enviar agora" ou "Restaurar da nuvem".'}
-async function nuvemSalvar(){if(!usr)return;const r=await sb.from('planner_data').upsert({user_id:usr.id,data:S,updated_at:new Date().toISOString()});dst=r.error?'Erro ao salvar: '+r.error.message:'Salvo na nuvem às '+new Date().toLocaleTimeString('pt-BR');if(!r.error)toast('Salvo na nuvem ☁️');if(pg==='nuvem')draw()}
-async function nuvemRestaurar(){const r=await sb.from('planner_data').select('data').maybeSingle();if(r.error||!r.data){toast(r.error?'Erro ao restaurar':'Nada salvo na nuvem');return}S=r.data.data;loc();dst='Restaurado da nuvem';toast('Restaurado!');draw()}
+async function nuvemSalvar(){if(!usr)return;const r=await sb.from('isis_viagens_data').upsert({user_id:usr.id,data:S,updated_at:new Date().toISOString()});dst=r.error?'Erro ao salvar: '+r.error.message:'Salvo na nuvem às '+new Date().toLocaleTimeString('pt-BR');if(!r.error)toast('Salvo na nuvem ☁️');if(pg==='nuvem')draw()}
+async function nuvemRestaurar(){const r=await sb.from('isis_viagens_data').select('data').maybeSingle();if(r.error||!r.data){toast(r.error?'Erro ao restaurar':'Nada salvo na nuvem');return}S=r.data.data;loc();dst='Restaurado da nuvem';toast('Restaurado!');draw()}
 async function sair(){await sb.auth.signOut();usr=null;dst='Desconectado';draw()}
 async function sbBoot(){if(!sbInit())return;const r=await sb.auth.getSession();if(r.data.session){usr=r.data.session.user;await sbSync();draw()}}
 function nuvem(){const c=cfg();return`<div class="panel"><h2>1. Conexão com o Supabase</h2>${SB_URL?'<p class="sub">Configuração já embutida no site.</p>':`<p class="sub">Cole a Project URL e a chave anon/publishable (Project Settings → API).</p><div class="form"><div><label>Project URL</label><input id="sbu" value="${esc(c.u)}" placeholder="https://xxxx.supabase.co"></div><div><label>Chave anon / publishable</label><input id="sbk" value="${esc(c.k)}"></div></div><div class="actions"><button class="secondary" onclick="sbCfg()">Salvar</button></div>`}</div>
