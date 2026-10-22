@@ -21,7 +21,7 @@ Site de um arquivo só (`index.html`). Os dados ficam no navegador e, depois do 
 ## Parte B — Publicar no GitHub Pages
 
 6. Em https://github.com, crie o repositório **público** `isis-planner`.
-7. Envie `index.html`, `supabase.sql` e `README.md` com **uploading an existing file** e confirme em **Commit changes**.
+7. Envie `index.html`, `manifest.webmanifest`, a pasta `icons` (com as 4 imagens), `supabase.sql`, `supabase-anexos.sql` e `README.md` com **uploading an existing file** e confirme em **Commit changes**.
 8. **Settings → Pages → Deploy from a branch → `main` / `(root)` → Save**.
 9. Em 1 a 2 minutos o site abre em `https://SEU-USUARIO.github.io/isis-planner/`.
 
@@ -40,7 +40,7 @@ Site de um arquivo só (`index.html`). Os dados ficam no navegador e, depois do 
 
 ## Trazer os dados que você já tem
 
-No link do Claude: **Minhas viagens → Backup dos dados → Copiar**. No site novo, cole o texto no mesmo lugar e clique em **Importar**. Depois entre na Nuvem: os dados são enviados.
+No link do Claude: **Minhas viagens → Backup dos dados → Copiar** (na versão antiga) ou **Nuvem → Backup manual → Copiar** (na versão nova). No site novo, abra **Nuvem → Backup manual**, cole o texto e clique em **Importar**. Depois entre na Nuvem: os dados são enviados.
 
 ## Dica: embutir a configuração
 
